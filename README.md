@@ -55,16 +55,17 @@ See the [parsed dynamic secrets](#parsed-dynamic-secrets) example for a better e
 - [AKeyless GitHub Action](#akeyless-github-action)
     - [Inputs](#inputs)
     - [Outputs](#outputs)
-    - [Job Permissions Requirement](#job-permissions-requirement)
+  - [Job Permissions Requirement](#job-permissions-requirement)
   - [Examples](#examples)
+    - [Live Demos](#live-demos)
     - [Static Secrets Demo](#static-secrets-demo)
-    - [Dynamic Secrets](#dynamic-secrets-examples)
-    - [Dynamic Secrets with automatic parsing](#parsed-dynamic-secrets)
+    - [Dynamic Secrets](#dynamic-secrets-demos)
   - [AKeyless Setup](#akeyless-setup)
     - [Authentication Methods](#authentication-methods)
     - [Setting up JWT Auth](#setting-up-jwt-auth)
   - [Feature Requests & Issues](#feature-requests--issues)
   - [Breaking changes](#breaking-changes)
+  
 
 ### Job Permissions Requirement
 
@@ -83,15 +84,24 @@ jobs:
 
 ## Examples
 
-Here are some examples you can use for guidance:
+### Live Demos
 
-- A real-world scenario using NuGet Secrets in [LanceMcCarthy/DevOpsExamples => main_build-console.yml](https://github.com/LanceMcCarthy/DevOpsExamples/blob/main/.github/workflows/main_build-console.yml).
-- This Action's CI validation workflow at [LanceMcCarthy/akeyless-action => workflows/ci.yml](https://github.com/LanceMcCarthy/akeyless-action/blob/main/.github/workflows/ci.yml).
-- Use the YAML snippet below for a quick start:
+Although this repository's workflows use placeholder values, it is still a real AKeyless account and real providers. The approaches demonstrated are still valid as-is for real implementations. Use these to your advantage!
+
+- **Static Secrets**
+  - [Static secret (standard)](https://github.com/LanceMcCarthy/akeyless-action/blob/eef49f96c7ead7c3a4ae596a5e7fa32099778bd6/.github/workflows/ci.yml#L8-L31)
+- **Dynamic Secrets (AWS provider)** 
+  - [AWS dynamic secrets (default)](https://github.com/LanceMcCarthy/akeyless-action/blob/eef49f96c7ead7c3a4ae596a5e7fa32099778bd6/.github/workflows/ci.yml#L33-L88)
+  - [AWS dynamic secrets (auto-parsed)](https://github.com/LanceMcCarthy/akeyless-action/blob/eef49f96c7ead7c3a4ae596a5e7fa32099778bd6/.github/workflows/ci.yml#L90-L128)
+  - [AWS dynamic secrets (auto-parsed w/prefix)](https://github.com/LanceMcCarthy/akeyless-action/blob/eef49f96c7ead7c3a4ae596a5e7fa32099778bd6/.github/workflows/ci.yml#L130-L168)
+- **Dynamic Secrets (Database provider)**
+  - [SQL dynamic secrets (default)](https://github.com/LanceMcCarthy/akeyless-action/blob/eef49f96c7ead7c3a4ae596a5e7fa32099778bd6/.github/workflows/ci.yml#L170-L222)
+  - [SQL dynamic secrets (auto-parsed)](https://github.com/LanceMcCarthy/akeyless-action/blob/eef49f96c7ead7c3a4ae596a5e7fa32099778bd6/.github/workflows/ci.yml#L224-L262)
+  - [SQL dynamic secrets (auto-parsed w/prefix)](https://github.com/LanceMcCarthy/akeyless-action/blob/eef49f96c7ead7c3a4ae596a5e7fa32099778bd6/.github/workflows/ci.yml#L264-L296)
 
 ### Static Secrets Demo
 
-Static secrets are the easiest to use. define the secret path and the secret's output.
+Static secrets are the easiest to use. Just define the secret's path and the secret's output.
 
 ```
 jobs:
@@ -122,9 +132,11 @@ jobs:
         echo "my_dynamic_secret: ${{ env.my_dynamic_secret }}"
 ```
 
-### Dynamic Secrets Examples
+### Dynamic Secrets Demos
 
-The key difference with dynamic secrets is the output value is typically a JSON object. there are two ways you can handle this
+The key difference with dynamic secrets is the output value is typically a JSON object. there are two ways you can handle this; *default* output or *parsed* outputs
+
+#### Default Output
 
 If you want those secrets as separate environment variables, there's one extra step to take. See the `KEY TAKEAWAY` section in the following example.
 
@@ -162,9 +174,9 @@ If you want those secrets as separate environment variables, there's one extra s
         echo "user: ${{ env.AWS_user }}"
 ```
 
-#### Parsed Dynamic Secrets
+#### Parsed Output
 
-If you set `parse-dynamic-secrets: true`, the job will automatically create a a separate output for every key in the dynamic secret
+If you set `parse-dynamic-secrets: true`, the job will automatically create a a separate output for every key in the dynamic secret. This is extremely useful if you do not want to manually parse it, or if you need to immediately use an output's value in a subsequent step.
 
 For example, a SQL server dynamic secret will provide **id**, **user**, **ttl_in_minutes** and **password** values.
 
@@ -188,7 +200,7 @@ echo ${{ steps.get-secrets.outputs.ttl_in_minutes }}
 echo ${{ steps.get-secrets.outputs.password }}
 ```
 
-Environment Variables
+Environment Variables:
 
 ```bash
 echo ${{ env.id }}
@@ -197,27 +209,27 @@ echo ${{ env.ttl_in_minutes }}
 echo ${{ env.password }}
 ```
 
+##### Using a Prefix
 
-##### Name Prefix
-
-If you would like a prefix before the output/var name, use a value for the output path. All the outputs will be prefixed with that string and an underscore.
+Sometimes you might want to prefix the variable name. This is easily done by setting an output name, that value will be used to prefix all the output keys.
 
 For example, using "SQL" for the output path:
 
 ```yaml
 - name: Fetch dynamic secrets from AKeyless ('SQL' prefix)
   uses: LanceMcCarthy/akeyless-action@v3
-  id: get-secrets
+  id: job-name
   with:
     access-id: ${{ secrets.AKEYLESS_ACCESS_ID }}
     dynamic-secrets: '{"/DevTools/my-sqlsrv-secret":"SQL"}' # uses 'SQL' for prefix
     parse-dynamic-secrets: true
 ```
-Will add the `SQL_` prefix to the output and var names:
+The action will prefix `SQL_` prefix to all the automatically parsed outputs:
 
 ```bash
+# notice the extra "SQL_" prefix
 echo ${{ env.SQL_user }}
-echo ${{ steps.get-secrets.outputs.SQL_user }}
+echo ${{ steps.job-name.outputs.SQL_user }}
 ```
 
 ## AKeyless Setup
