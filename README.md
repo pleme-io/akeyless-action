@@ -1,11 +1,10 @@
-
-
 # AKeyless GitHub Action
 
 This action will login to AKeyless using JWT or IAM authentication and then fetch secrets and/or provision AWS access via a dynamic producer.
 
-> It is important that you follow the instructions in the [AKeyless Setup](#akeyless-setup) and [Job Permissions Requirement](#job-permissions-requirement) sections **before** using this Action.
-
+| Workflow | Status |
+|----------|--------|
+| `main` | [![CI Main](https://github.com/LanceMcCarthy/akeyless-action/actions/workflows/ci.yml/badge.svg)](https://github.com/LanceMcCarthy/akeyless-action/actions/workflows/ci.yml) |
 
 ### Inputs
 
@@ -20,6 +19,8 @@ This action will login to AKeyless using JWT or IAM authentication and then fetc
 | **export-secrets-to-outputs** | No | `boolean` | Default: `true`. True/False to denote if static/dynamic secrets should be exported as environment variables.  |
 | **export-secrets-to-environment** | No | `boolean` | Default: `true`. True/False to denote if static/dynamic secrets should be exported as action outputs. |
 | **parse-dynamic-secrets** | No | `boolean` | Default: `false`. True/False to denote if dynamic secrets will be broken up into individual outputs/env vars, see the [parsed dynamic secrets demos](#parsed-dynamic-secrets). |
+
+> It is important that you follow the instructions in the [AKeyless Setup](#akeyless-setup) and [Job Permissions Requirement](#job-permissions-requirement) sections **before** using this Action.
 
 ### Outputs
 
