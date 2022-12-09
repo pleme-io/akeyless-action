@@ -26,7 +26,7 @@ jobs:
         static-secrets: '{"/DevTools/my-static-secret":"my_static_secret"}'
 
     - name: Verify Job Outputs
-      run: echo "Your output secret is ${{ steps.fetch-secrets.my_static_secret }}"
+      run: echo "Your output secret is ${{ steps.fetch-secrets.outputs.my_static_secret }}"
 
     - name: Verify Environment Variables
       run: echo "Your environment secret is ${{ env.my_static_secret }}"
