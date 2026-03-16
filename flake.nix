@@ -14,7 +14,7 @@
         pname = "akeyless-action";
         version = "0.0.0-dev";
         src = self;
-        npmDepsHash = "sha256-OLy7p7WilOTm3zEAQbaSbofz3h/Aalu7vhvHXqoq/js="; # TODO: set correct hash
+        npmDepsHash = "sha256-OLy7p7WilOTm3zEAQbaSbofz3h/Aalu7vhvHXqoq/js=";
         dontNpmBuild = true;
         meta = {
           description = "GitHub Action to login to Akeyless and fetch secrets or provision AWS access via dynamic producers";
